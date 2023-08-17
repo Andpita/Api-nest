@@ -5,8 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { StateModule } from './state/state.module';
 import { CityModule } from './city/city.module';
 import { AddressModule } from './address/address.module';
-import { StateController } from './state/state.controller';
-import { StateService } from './state/state.service';
 
 @Module({
   imports: [
