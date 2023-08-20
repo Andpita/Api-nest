@@ -9,5 +9,6 @@ import { CacheModule } from '../cache/cache.module';
   imports: [CacheModule, TypeOrmModule.forFeature([CityEntity])],
   controllers: [CityController],
   providers: [CityService],
+  exports: [CityService],
 })
 export class CityModule {}
