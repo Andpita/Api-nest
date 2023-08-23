@@ -6,6 +6,7 @@ import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ReturnLoginDTO } from './dtos/returnLogin.dto';
 import { PayloadDTO } from './dtos/payload.dto';
+import { ReturnUserDTO } from 'src/user/dtos/returnUser.dto';
 
 @Injectable()
 export class AuthService {
@@ -27,7 +28,7 @@ export class AuthService {
 
     return {
       accessToken: await this.jwtService.signAsync({ ...new PayloadDTO(user) }),
-      user,
+      user: new ReturnUserDTO(user),
     };
   }
 }
