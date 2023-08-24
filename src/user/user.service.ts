@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'bcrypt';
-import { CreateUserDTO } from 'src/user/dtos/createUser.dto';
-import { UserEntity } from 'src/user/entities/user.entity';
+import { CreateUserDTO } from '../user/dtos/createUser.dto';
+import { UserEntity } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -13,6 +17,14 @@ export class UserService {
   ) {}
 
   async createUser(createUserDTO: CreateUserDTO): Promise<UserEntity> {
+    const userCheck = await this.findUserByEmail(createUserDTO.email).catch(
+      () => undefined,
+    );
+
+    if (userCheck) {
+      throw new BadRequestException(`E-mail já cadastrado`);
+    }
+
     const _password = await hash(createUserDTO.password, 8);
 
     return this.userRepository.save({

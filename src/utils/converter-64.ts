@@ -1,4 +1,4 @@
-import { PayloadDTO } from 'src/auth/dtos/payload.dto';
+import { PayloadDTO } from '../auth/dtos/payload.dto';
 
 export const authPayload = (authorization: string): PayloadDTO | undefined => {
   const authArray = authorization.split('.');

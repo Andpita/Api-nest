@@ -1,9 +1,14 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  BadRequestException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
-import { PayloadDTO } from 'src/auth/dtos/payload.dto';
-import { ROLES_KEY } from 'src/decorator/roles.decorator';
-import { UserType } from 'src/user/enum/user-type.enum';
+import { PayloadDTO } from '../auth/dtos/payload.dto';
+import { ROLES_KEY } from '../decorator/roles.decorator';
+import { UserType } from '../user/enum/user-type.enum';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -23,6 +28,11 @@ export class RolesGuard implements CanActivate {
     }
 
     const { authorization } = context.switchToHttp().getRequest().headers;
+
+    if (!authorization) {
+      throw new BadRequestException('Sessão expirada.');
+    }
+
     const auth = authorization.split(' ');
 
     const loginPayload: PayloadDTO | undefined = await this.jwtService
