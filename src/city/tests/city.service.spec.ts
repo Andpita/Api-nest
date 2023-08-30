@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { CityService } from '../city.service';
 import { CityEntity } from '../entities/city.entity';
 import { CacheService } from '../../cache/cache.service';
-import { cityMock } from '../mocks/city,mock';
+import { cityMock } from '../mocks/city.mock';
 
 describe('CityService', () => {
   let service: CityService;
