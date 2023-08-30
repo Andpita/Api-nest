@@ -5,7 +5,6 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { userMock } from '../mocks/user.mock';
 import { createUserMock } from '../mocks/createUser.mock';
-import { UserType } from '../enum/user-type.enum';
 
 describe('UserService', () => {
   let service: UserService;
