@@ -2,7 +2,7 @@ import {
   Injectable,
   CanActivate,
   ExecutionContext,
-  BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
@@ -30,7 +30,7 @@ export class RolesGuard implements CanActivate {
     const { authorization } = context.switchToHttp().getRequest().headers;
 
     if (!authorization) {
-      throw new BadRequestException('Sessão expirada.');
+      throw new ForbiddenException('Faça Login para continuar.');
     }
 
     const auth = authorization.split(' ');
