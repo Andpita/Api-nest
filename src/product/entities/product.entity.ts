@@ -1,4 +1,4 @@
-import { CategoryEntity } from 'src/category/entities/category.entity';
+import { CategoryEntity } from '../../category/entities/category.entity';
 import {
   Column,
   CreateDateColumn,
@@ -33,6 +33,6 @@ export class ProductEntity {
   updatedAt: Date;
 
   @ManyToOne(() => CategoryEntity, (category) => category.product)
-  @JoinColumn({ name: 'categoty_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'category_id', referencedColumnName: 'id' })
   category?: CategoryEntity;
 }
