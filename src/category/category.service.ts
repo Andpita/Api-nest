@@ -39,6 +39,20 @@ export class CategoryService {
     return category;
   }
 
+  async findOneCategoryById(id: number): Promise<CategoryEntity> {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        id,
+      },
+    });
+
+    if (!category) {
+      throw new BadRequestException(`Categoria ${id} não encontrada`);
+    }
+
+    return category;
+  }
+
   async createCategory(category: CreateCategoryDTO): Promise<CategoryEntity> {
     const categoryCheck = await this.findOneCategory(category.name).catch(
       () => undefined,

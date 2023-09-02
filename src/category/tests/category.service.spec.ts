@@ -69,22 +69,32 @@ describe('CategoryService', () => {
   });
 
   it('should return error if duplicate name category', async () => {
-    jest.spyOn(categoryRepository, 'save').mockResolvedValue(categoryMock);
-
     expect(service.createCategory(createCategoryMock)).rejects.toThrowError();
   });
 
   //FindOne
-  it('should return one category', async () => {
+  it('should return one category by name', async () => {
     const category = await service.findOneCategory(categoryMock.name);
 
     expect(category).toEqual(categoryMock);
   });
 
-  it('should return error category not exist', async () => {
+  it('should return one category by id', async () => {
+    const category = await service.findOneCategoryById(categoryMock.id);
+
+    expect(category).toEqual(categoryMock);
+  });
+
+  it('should return error category by name not exist', async () => {
     jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(undefined);
 
     expect(service.findOneCategory(categoryMock.name)).rejects.toThrowError();
+  });
+
+  it('should return error category by name not exist', async () => {
+    jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(undefined);
+
+    expect(service.findOneCategoryById(categoryMock.id)).rejects.toThrowError();
   });
 
   it('should return error exception category findOne', async () => {
