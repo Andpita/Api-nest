@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateProductDTO } from './dtos/createProduct.dto';
-import { ReturnProductDTO } from './dtos/returnProduct.dto';
 import { CategoryService } from './../category/category.service';
+import { UpdateProductDTO } from './dtos/updateProduct.dto';
 
 @Injectable()
 export class ProductService {
@@ -19,8 +19,8 @@ export class ProductService {
   ) {}
 
   //create
-  async createProduct(product: CreateProductDTO): Promise<ReturnProductDTO> {
-    const productCheck = await this.findProduct(product.name).catch(
+  async createProduct(product: CreateProductDTO): Promise<ProductEntity> {
+    const productCheck = await this.findProductByName(product.name).catch(
       () => undefined,
     );
 
@@ -36,11 +36,11 @@ export class ProductService {
       throw new BadRequestException(`Categoria ${categoryCheck} não existe`);
     }
 
-    return new ReturnProductDTO(await this.productRepository.save(product));
+    return await this.productRepository.save(product);
   }
 
   //find
-  async findProduct(name: string): Promise<ProductEntity> {
+  async findProductByName(name: string): Promise<ProductEntity> {
     const product = await this.productRepository.findOne({
       where: {
         name,
@@ -49,6 +49,21 @@ export class ProductService {
 
     if (!product) {
       throw new BadRequestException(`Produto ${name} não encontrado`);
+    }
+
+    return product;
+  }
+
+  async findProductById(id: number): Promise<ProductEntity> {
+    const product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
+    console.log(product);
+
+    if (!product) {
+      throw new BadRequestException(`Produto ${id} não encontrado`);
     }
 
     return product;
@@ -63,5 +78,43 @@ export class ProductService {
     }
 
     return products;
+  }
+
+  //delete
+  async deleteProductById(id: number): Promise<DeleteResult> {
+    const productDelete = await this.findProductById(id);
+
+    if (!productDelete) {
+      throw new NotFoundException(`Produto ${id} não encontrado`);
+    }
+
+    return this.productRepository.delete(id);
+  }
+
+  //create
+  async updateProduct(
+    idProduct: number,
+    updateProduct: UpdateProductDTO,
+  ): Promise<ProductEntity> {
+    const product = await this.findProductById(idProduct).catch(
+      () => undefined,
+    );
+
+    if (!product) {
+      throw new BadRequestException(`Produto ${idProduct} não encontrado`);
+    }
+
+    const categoryCheck = await this.categoryService.findOneCategoryById(
+      updateProduct.categoryId,
+    );
+
+    if (!categoryCheck) {
+      throw new BadRequestException(`Categoria ${categoryCheck} não existe`);
+    }
+
+    return await this.productRepository.save({
+      ...product,
+      ...updateProduct,
+    });
   }
 }
