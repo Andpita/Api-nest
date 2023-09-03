@@ -14,11 +14,11 @@ import { UserType } from '../user/enum/user-type.enum';
 import { UserId } from '../decorator/userId.decorator';
 import { ReturnAddressDTO } from './dtos/returnAddress.dto';
 
-@Roles(UserType.User, UserType.Admin)
 @Controller('address')
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
+  @Roles(UserType.Admin)
   @Post()
   @UsePipes(ValidationPipe)
   async createAddress(
@@ -28,6 +28,7 @@ export class AddressController {
     return this.addressService.createAddress(address, userId);
   }
 
+  @Roles(UserType.User, UserType.Admin)
   @Get()
   @UsePipes(ValidationPipe)
   async findAllAddresses(
