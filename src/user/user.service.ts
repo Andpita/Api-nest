@@ -1,14 +1,16 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { hash } from 'bcrypt';
 import { CreateUserDTO } from '../user/dtos/createUser.dto';
 import { UserEntity } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import { UserType } from './enum/user-type.enum';
+import { UpdatePasswordDTO } from './dtos/updatePassword.dto';
+import { createHashPassword, decrypt } from '../utils/password';
 
 @Injectable()
 export class UserService {
@@ -17,8 +19,8 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(createUserDTO: CreateUserDTO): Promise<UserEntity> {
-    const userCheck = await this.findUserByEmail(createUserDTO.email).catch(
+  async createUser(createUser: CreateUserDTO): Promise<UserEntity> {
+    const userCheck = await this.findUserByEmail(createUser.email).catch(
       () => undefined,
     );
 
@@ -26,10 +28,10 @@ export class UserService {
       throw new BadRequestException(`E-mail já cadastrado`);
     }
 
-    const _password = await hash(createUserDTO.password, 8);
+    const _password = await createHashPassword(createUser.password);
 
     return this.userRepository.save({
-      ...createUserDTO,
+      ...createUser,
       password: _password,
       typeUser: UserType.User,
     });
@@ -78,5 +80,32 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async updateUserPassword(
+    userId: number,
+    updatePassword: UpdatePasswordDTO,
+  ): Promise<UserEntity> {
+    const user = await this.findUserById(userId);
+
+    if (!user) {
+      throw new ForbiddenException('Usuário não encontrado');
+    }
+
+    const _password = await createHashPassword(updatePassword.newPassword);
+
+    const isMatch = await decrypt(
+      updatePassword.oldPassword,
+      user.password || '',
+    );
+
+    if (!isMatch) {
+      throw new BadRequestException('Última senha inválida');
+    }
+
+    return this.userRepository.save({
+      ...user,
+      password: _password,
+    });
   }
 }

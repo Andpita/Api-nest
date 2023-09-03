@@ -2,11 +2,11 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { LoginDTO } from './dtos/login.dto';
 import { UserEntity } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
-import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ReturnLoginDTO } from './dtos/returnLogin.dto';
 import { PayloadDTO } from './dtos/payload.dto';
 import { ReturnUserDTO } from '../user/dtos/returnUser.dto';
+import { decrypt } from '../utils/password';
 
 @Injectable()
 export class AuthService {
@@ -20,9 +20,9 @@ export class AuthService {
       .findUserByEmail(loginData.email)
       .catch(() => undefined);
 
-    const decrypt = await compare(loginData.password, user?.password || 's');
+    const isMatch = await decrypt(loginData.password, user?.password || '');
 
-    if (!user || !decrypt) {
+    if (!user || !isMatch) {
       throw new NotFoundException('E-mail ou senha inválido.');
     }
 
