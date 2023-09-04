@@ -60,7 +60,6 @@ export class ProductService {
         id,
       },
     });
-    console.log(product);
 
     if (!product) {
       throw new BadRequestException(`Produto ${id} não encontrado`);
