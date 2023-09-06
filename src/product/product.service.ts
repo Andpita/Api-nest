@@ -83,7 +83,6 @@ export class ProductService {
   async deleteProductById(id: number): Promise<DeleteResult> {
     const productDelete = await this.findProductById(id);
 
-    console.log(productDelete, id);
     if (!productDelete) {
       throw new NotFoundException(`Produto ${id} não encontrado`);
     }

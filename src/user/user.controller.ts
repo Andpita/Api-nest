@@ -15,7 +15,7 @@ import { ReturnUserDTO } from './dtos/returnUser.dto';
 import { UpdatePasswordDTO } from './dtos/updatePassword.dto';
 import { UserId } from '../decorator/userId.decorator';
 import { UserType } from './enum/user-type.enum';
-import { Roles } from 'src/decorator/roles.decorator';
+import { Roles } from '../decorator/roles.decorator';
 
 @Controller('user')
 export class UserController {
