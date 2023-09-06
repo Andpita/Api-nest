@@ -5,6 +5,7 @@ import { DeleteResult, Repository } from 'typeorm';
 import { InsertCartDTO } from 'src/cart/dtos/insert-cart.dto';
 import { CartEntity } from 'src/cart/entities/cart.entity';
 import { ProductService } from 'src/product/product.service';
+import { UpdateProductCartDTO } from 'src/cart/dtos/update-cart.dto';
 
 @Injectable()
 export class CartProductService {
@@ -65,7 +66,7 @@ export class CartProductService {
     ).catch(() => undefined);
 
     if (!cartProduct) {
-      this.createProductInCart(insertCart, cart.id);
+      return this.createProductInCart(insertCart, cart.id);
     }
 
     return this.cartProductRepository.save({
@@ -79,5 +80,36 @@ export class CartProductService {
     cartId: number,
   ): Promise<DeleteResult> {
     return this.cartProductRepository.delete({ productId, cartId });
+  }
+
+  async updateProductCart(
+    updateProduct: UpdateProductCartDTO,
+    cart: CartEntity,
+  ): Promise<CartProductEntity> {
+    const product = await this.productService.findProductById(
+      updateProduct.productId,
+    );
+
+    if (!product) {
+      throw new NotFoundException(
+        `Produto ${updateProduct.productId} não encontrado`,
+      );
+    }
+
+    const cartProduct = await this.verifyProductInCart(
+      updateProduct.productId,
+      cart.id,
+    );
+
+    if (!cartProduct) {
+      throw new NotFoundException(
+        `Produto ${updateProduct.productId} não encontrado no carrinho ${cart.id}`,
+      );
+    }
+
+    return this.cartProductRepository.save({
+      ...cartProduct,
+      amount: updateProduct.amount,
+    });
   }
 }

@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CartEntity } from './entities/cart.entity';
 import { DeleteResult, Repository } from 'typeorm';
 import { InsertCartDTO } from './dtos/insert-cart.dto';
-import { CartProductService } from 'src/cart-product/cart-product.service';
-import { UserId } from 'src/decorator/userId.decorator';
+import { CartProductService } from '../cart-product/cart-product.service';
+import { UpdateProductCartDTO } from './dtos/update-cart.dto';
 
 @Injectable()
 export class CartService {
@@ -74,6 +74,20 @@ export class CartService {
     userId: number,
   ): Promise<DeleteResult> {
     const cart = await this.checkCart(userId);
+
     return this.cartProductService.deleteProductCart(productId, cart.id);
+  }
+
+  async updateProductCart(
+    updateProduct: UpdateProductCartDTO,
+    userId: number,
+  ): Promise<CartEntity> {
+    const cart = await this.checkCart(userId).catch(async () => {
+      return await this.createCart(userId);
+    });
+
+    await this.cartProductService.updateProductCart(updateProduct, cart);
+
+    return cart;
   }
 }
