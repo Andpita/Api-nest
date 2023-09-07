@@ -19,6 +19,10 @@ export class CartService {
 
     const cart = await this.checkCart(userId);
 
+    if (!cart) {
+      throw new NotFoundException(`Carrinho não encontrado`);
+    }
+
     await this.cartRepository.save({
       ...cart,
       active: false,
@@ -48,10 +52,14 @@ export class CartService {
   }
 
   async createCart(userId: number): Promise<CartEntity> {
-    const newCart = this.cartRepository.save({
+    const newCart = await this.cartRepository.save({
       active: true,
       userId: userId,
     });
+
+    if (!newCart) {
+      throw new NotFoundException(`Erro ao criar carrinho.`);
+    }
 
     return newCart;
   }

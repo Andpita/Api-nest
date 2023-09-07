@@ -1,6 +1,6 @@
 import { DeleteResult } from 'typeorm';
 
 export const cartDeleteMock: DeleteResult = {
-  raw: [],
+  raw: ['Cart Empty'],
   affected: 1,
 };
