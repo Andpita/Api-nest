@@ -101,12 +101,6 @@ export class CartProductService {
       cart.id,
     );
 
-    if (!cartProduct) {
-      throw new NotFoundException(
-        `Produto ${updateProduct.productId} não encontrado no carrinho ${cart.id}`,
-      );
-    }
-
     return this.cartProductRepository.save({
       ...cartProduct,
       amount: updateProduct.amount,

@@ -171,8 +171,16 @@ describe('CartProductService', () => {
     ).rejects.toThrowError(NotFoundException);
   });
 
-  it('should return cart product if not exist cart (updateProductInCart)', async () => {
+  it('should return cart not exist cart (updateProductInCart)', async () => {
     jest.spyOn(cartProductRepository, 'findOne').mockResolvedValue(undefined);
+
+    expect(
+      service.updateProductCart(updateProductMock, cartMock),
+    ).rejects.toThrowError(NotFoundException);
+  });
+
+  it('should return product not exist (updateProductInCart)', async () => {
+    jest.spyOn(productService, 'findProductById').mockResolvedValue(undefined);
 
     expect(
       service.updateProductCart(updateProductMock, cartMock),

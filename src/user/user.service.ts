@@ -88,10 +88,6 @@ export class UserService {
   ): Promise<UserEntity> {
     const user = await this.findUserById(userId);
 
-    if (!user) {
-      throw new ForbiddenException('Usuário não encontrado');
-    }
-
     const _password = await createHashPassword(updatePassword.newPassword);
 
     const isMatch = await decrypt(

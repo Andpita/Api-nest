@@ -24,16 +24,10 @@ export class ProductService {
       () => undefined,
     );
 
-    const categoryCheck = await this.categoryService.findOneCategoryById(
-      product.categoryId,
-    );
+    await this.categoryService.findOneCategoryById(product.categoryId);
 
     if (productCheck) {
       throw new BadRequestException(`Produto ${product.name} já cadastrado`);
-    }
-
-    if (!categoryCheck) {
-      throw new BadRequestException(`Categoria ${categoryCheck} não existe`);
     }
 
     return await this.productRepository.save(product);
@@ -90,7 +84,7 @@ export class ProductService {
     return await this.productRepository.delete(id);
   }
 
-  //create
+  //update
   async updateProduct(
     idProduct: number,
     updateProduct: UpdateProductDTO,
@@ -103,13 +97,7 @@ export class ProductService {
       throw new BadRequestException(`Produto ${idProduct} não encontrado`);
     }
 
-    const categoryCheck = await this.categoryService.findOneCategoryById(
-      updateProduct.categoryId,
-    );
-
-    if (!categoryCheck) {
-      throw new BadRequestException(`Categoria ${categoryCheck} não existe`);
-    }
+    await this.categoryService.findOneCategoryById(updateProduct.categoryId);
 
     return await this.productRepository.save({
       ...product,

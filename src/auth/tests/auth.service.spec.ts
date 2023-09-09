@@ -55,6 +55,12 @@ describe('AuthService', () => {
     ).rejects.toThrowError();
   });
 
+  it('should return user if email not exist', async () => {
+    jest.spyOn(userService, 'findUserByEmail').mockResolvedValue(undefined);
+
+    expect(service.login(loginMock)).rejects.toThrowError();
+  });
+
   it('should return error in UserService', async () => {
     jest.spyOn(userService, 'findUserByEmail').mockRejectedValue(new Error());
 

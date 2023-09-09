@@ -22,6 +22,7 @@ describe('UserService', () => {
           provide: getRepositoryToken(UserEntity),
           useValue: {
             findOne: jest.fn().mockResolvedValue(userMock),
+            find: jest.fn().mockResolvedValue([userMock]),
             save: jest.fn().mockResolvedValue(userMock),
           },
         },
@@ -83,6 +84,20 @@ describe('UserService', () => {
     expect(user).toEqual(userMock);
   });
 
+  it('should return relations in getUserByIdUsingRelations', async () => {
+    const spy = jest.spyOn(userRepository, 'findOne');
+    const user = await service.getUserByIdUsingRelations(userMock.id);
+
+    expect(user).toEqual(userMock);
+    expect(spy.mock.calls[0][0].relations).toEqual({
+      addresses: {
+        city: {
+          state: true,
+        },
+      },
+    });
+  });
+
   //Create User
   it('should return error if user exist', async () => {
     expect(service.createUser(createUserMock)).rejects.toThrowError();
@@ -96,6 +111,7 @@ describe('UserService', () => {
     expect(user).toEqual(userMock);
   });
 
+  //Update User
   it('should return user in update password', async () => {
     const user = await service.updateUserPassword(
       userMock.id,
@@ -112,10 +128,17 @@ describe('UserService', () => {
   });
 
   it('should return error if user not exist in update password', async () => {
-    jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
+    jest.spyOn(userRepository, 'findOne').mockRejectedValue(new Error());
 
     expect(
       service.updateUserPassword(userMock.id, updatePasswordInvalidMock),
     ).rejects.toThrowError();
+  });
+
+  //Get All Users
+  it('should return all user exist', async () => {
+    const users = await service.getAllUsers();
+
+    expect(users).toEqual([userMock]);
   });
 });

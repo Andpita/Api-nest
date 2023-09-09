@@ -19,10 +19,6 @@ export class CartService {
 
     const cart = await this.checkCart(userId);
 
-    if (!cart) {
-      throw new NotFoundException(`Carrinho não encontrado`);
-    }
-
     await this.cartRepository.save({
       ...cart,
       active: false,
