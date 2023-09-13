@@ -18,7 +18,7 @@ import { ReturnAddressDTO } from './dtos/returnAddress.dto';
 export class AddressController {
   constructor(private readonly addressService: AddressService) {}
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.User)
   @Post()
   @UsePipes(ValidationPipe)
   async createAddress(
