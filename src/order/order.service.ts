@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { OrderEntity } from './entities/order.entity';
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDTO } from './dtos/create-order.dto';
 import { PaymentService } from 'src/payment/payment.service';
 import { PaymentEntity } from 'src/payment/entities/payment.entity';
@@ -58,18 +58,47 @@ export class OrderService {
     newOrder: CreateOrderDTO,
     userId: number,
   ): Promise<OrderEntity> {
-    const payment = await this.paymentService.createPayment(newOrder);
-    const order = await this.saveOrder(newOrder, payment, userId);
     const cart = await this.cartService.checkCart(userId, true);
-
     const products = await this.productService.findAllProducts(
       cart.cartProduct?.map((product) => product.productId),
     );
+
+    const payment = await this.paymentService.createPayment(
+      newOrder,
+      products,
+      cart,
+    );
+    const order = await this.saveOrder(newOrder, payment, userId);
 
     await this.createOrderProductsInCart(cart, order.id, products);
 
     await this.cartService.clearCart(userId);
 
     return order;
+  }
+
+  async findMyOrders(userId: number): Promise<OrderEntity[]> {
+    const orders = await this.orderRepository.find({
+      where: {
+        userId,
+      },
+      relations: {
+        address: true,
+        orderProduct: {
+          product: true,
+        },
+        payment: {
+          status: true,
+        },
+      },
+    });
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException(
+        `${userId} Nenhuma ordem de compra encontrada`,
+      );
+    }
+
+    return orders;
   }
 }
