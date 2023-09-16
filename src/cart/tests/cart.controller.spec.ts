@@ -22,6 +22,7 @@ describe('CartController', () => {
             checkCart: jest.fn().mockResolvedValue(cartMock),
             deleteProductCart: jest.fn().mockResolvedValue(productDeleteMock),
             updateProductCart: jest.fn().mockResolvedValue(cartMock),
+            clearCart: jest.fn().mockResolvedValue(productDeleteMock),
           },
         },
       ],
@@ -56,7 +57,7 @@ describe('CartController', () => {
     });
   });
 
-  it('should return delete cart success (delete)', async () => {
+  it('should return delete productCart success (delete)', async () => {
     const cart = await controller.deleteProductCart(
       productMock.id,
       userMock.id,
@@ -73,6 +74,15 @@ describe('CartController', () => {
 
     expect(cart).toEqual({
       id: cartMock.id,
+    });
+  });
+
+  it('should return delete cart success (delete)', async () => {
+    const cart = await controller.clearCart(userMock.id);
+
+    expect(cart).toEqual({
+      raw: [],
+      affected: 1,
     });
   });
 });

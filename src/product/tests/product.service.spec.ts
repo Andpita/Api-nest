@@ -9,6 +9,7 @@ import { CategoryEntity } from '../../category/entities/category.entity';
 import { categoryMock } from '../../category/mocks/category.mock';
 import { productDeleteMock } from '../mocks/productDelete.mock';
 import { updateProductMock } from '../mocks/updateProduct.mock';
+import { BadRequestException } from '@nestjs/common';
 
 describe('ProductService', () => {
   let service: ProductService;
@@ -141,7 +142,9 @@ describe('ProductService', () => {
   it('should return error if product not fount for delete', async () => {
     jest.spyOn(productRepository, 'findOne').mockResolvedValue(undefined);
 
-    expect(service.deleteProductById(productMock.id)).rejects.toThrowError();
+    expect(service.deleteProductById(productMock.id)).rejects.toThrowError(
+      BadRequestException,
+    );
   });
 
   it('should return error if exception in product delete', async () => {

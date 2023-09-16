@@ -38,11 +38,9 @@ export class UserController {
   @Roles(UserType.Admin)
   @Get('/:userId')
   async getUserById(@Param('userId') userId: number): Promise<ReturnUserDTO> {
-    const user = new ReturnUserDTO(
+    return new ReturnUserDTO(
       await this.userService.getUserByIdUsingRelations(userId),
     );
-
-    return user;
   }
 
   @Patch()

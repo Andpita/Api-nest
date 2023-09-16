@@ -36,8 +36,6 @@ export class PaymentService {
           }
           return valueItem * buyList.price;
         }
-
-        return 0;
       })
       .reduce((ac, cv) => ac + cv, 0)
       .toFixed(2);
