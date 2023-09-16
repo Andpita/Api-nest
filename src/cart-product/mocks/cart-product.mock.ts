@@ -6,7 +6,7 @@ export const cartProductMock: CartProductEntity = {
   id: 1,
   cartId: cartMock.id,
   productId: productMock.id,
-  amount: 1,
+  amount: 10,
   createdAt: new Date(),
   updatedAt: new Date(),
 };

@@ -2,12 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaymentEntity } from './entities/payment.entity';
 import { Repository } from 'typeorm';
-import { CreateOrderDTO } from 'src/order/dtos/create-order.dto';
+import { CreateOrderDTO } from '../order/dtos/create-order.dto';
 import { PaymentCreditCardEntity } from './entities/payment-credit-card.entity';
 import { PaymentType } from './enum/payment-type.enum';
 import { PaymentPixEntity } from './entities/payment-pix.entity';
-import { ProductEntity } from 'src/product/entities/product.entity';
-import { CartEntity } from 'src/cart/entities/cart.entity';
+import { ProductEntity } from '../product/entities/product.entity';
+import { CartEntity } from '../cart/entities/cart.entity';
 
 @Injectable()
 export class PaymentService {
@@ -21,7 +21,7 @@ export class PaymentService {
       return 0;
     }
 
-    return cart.cartProduct
+    const price = cart.cartProduct
       .map((productInCart) => {
         const buyList = products.find(
           (product) => product.id === productInCart.productId,
@@ -39,7 +39,10 @@ export class PaymentService {
 
         return 0;
       })
-      .reduce((ac, cv) => ac + cv, 0);
+      .reduce((ac, cv) => ac + cv, 0)
+      .toFixed(2);
+
+    return Number(price);
   }
 
   async createPayment(

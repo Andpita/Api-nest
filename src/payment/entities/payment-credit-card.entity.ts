@@ -1,6 +1,6 @@
 import { ChildEntity, Column } from 'typeorm';
 import { PaymentEntity } from './payment.entity';
-import { CreateOrderDTO } from 'src/order/dtos/create-order.dto';
+import { CreateOrderDTO } from '../../order/dtos/create-order.dto';
 
 @ChildEntity()
 export class PaymentCreditCardEntity extends PaymentEntity {
