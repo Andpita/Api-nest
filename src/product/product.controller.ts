@@ -25,7 +25,7 @@ export class ProductController {
   @Get()
   @UsePipes(ValidationPipe)
   async findAllProducts(): Promise<ReturnProductDTO[]> {
-    return (await this.productService.findAllProducts()).map(
+    return (await this.productService.findAllProducts([], true)).map(
       (product) => new ReturnProductDTO(product),
     );
   }

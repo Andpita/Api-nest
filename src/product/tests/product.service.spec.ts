@@ -3,7 +3,7 @@ import { ProductService } from '../product.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProductEntity } from '../entities/product.entity';
 import { productMock } from '../mocks/product.mock';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CategoryService } from '../../category/category.service';
 import { CategoryEntity } from '../../category/entities/category.entity';
 import { categoryMock } from '../../category/mocks/category.mock';
@@ -83,6 +83,29 @@ describe('ProductService', () => {
     const productsAll = await service.findAllProducts();
 
     expect(productsAll).toEqual([productMock]);
+  });
+
+  it('should return list all products with relations', async () => {
+    const spy = jest.spyOn(productRepository, 'find');
+    const productsAll = await service.findAllProducts([], true);
+
+    expect(productsAll).toEqual([productMock]);
+    expect(spy.mock.calls[0][0]).toEqual({
+      relations: { category: true },
+    });
+  });
+
+  it('should return list all products with relations and array', async () => {
+    const spy = jest.spyOn(productRepository, 'find');
+    const productsAll = await service.findAllProducts([1], true);
+
+    expect(productsAll).toEqual([productMock]);
+    expect(spy.mock.calls[0][0]).toEqual({
+      where: {
+        id: In([1]),
+      },
+      relations: { category: true },
+    });
   });
 
   it('should return error in list products empty', async () => {

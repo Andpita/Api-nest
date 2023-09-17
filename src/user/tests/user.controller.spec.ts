@@ -4,6 +4,7 @@ import { UserService } from '../user.service';
 import { userMock } from '../mocks/user.mock';
 import { createUserMock } from '../mocks/createUser.mock';
 import { updatePasswordMock } from '../mocks/updatePassword.mock';
+import { ReturnUserDTO } from '../dtos/returnUser.dto';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -18,6 +19,7 @@ describe('UserController', () => {
             getAllUsers: jest.fn().mockResolvedValue([userMock]),
             createUser: jest.fn().mockResolvedValue(userMock),
             getUserById: jest.fn().mockResolvedValue(userMock),
+            getUserByIdUsingRelations: jest.fn().mockResolvedValue(userMock),
             updateUserPassword: jest.fn().mockResolvedValue(userMock),
           },
         },
@@ -69,5 +71,11 @@ describe('UserController', () => {
       typeUser: undefined,
     });
     expect(spyUpdate.mock.calls.length).toEqual(1);
+  });
+
+  it('should return user info in getUserInfo (get)', async () => {
+    const users = await controller.getUserInfo(userMock.id);
+
+    expect(users).toEqual(new ReturnUserDTO(userMock));
   });
 });

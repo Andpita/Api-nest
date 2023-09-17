@@ -53,6 +53,7 @@ export class ProductService {
       where: {
         id,
       },
+      relations: { category: true },
     });
 
     if (!product) {
@@ -63,7 +64,10 @@ export class ProductService {
   }
 
   //findAll
-  async findAllProducts(productId?: number[]): Promise<ProductEntity[]> {
+  async findAllProducts(
+    productId?: number[],
+    relationsCategory?: boolean,
+  ): Promise<ProductEntity[]> {
     let findOptions = {};
 
     if (productId && productId.length > 0) {
@@ -72,6 +76,10 @@ export class ProductService {
           id: In(productId),
         },
       };
+    }
+
+    if (relationsCategory) {
+      findOptions = { ...findOptions, relations: { category: true } };
     }
 
     const products = await this.productRepository.find(findOptions);
