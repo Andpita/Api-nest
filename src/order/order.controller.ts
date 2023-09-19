@@ -31,8 +31,10 @@ export class OrderController {
 
   @Roles(UserType.Admin, UserType.User)
   @Get()
-  async myOrders(@UserId() userId: number): Promise<OrderEntity[]> {
-    return this.orderService.findMyOrders(userId);
+  async myOrders(@UserId() userId: number): Promise<ReturnOrderDTO[]> {
+    return (await this.orderService.findMyOrders(userId)).map(
+      (order) => new ReturnOrderDTO(order),
+    );
   }
 
   @Roles(UserType.Admin)

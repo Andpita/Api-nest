@@ -10,6 +10,7 @@ export class ReturnOrderDTO {
   addressId: number;
   paymentId: number;
   orderId: number;
+  amountProducts?: number;
   user?: ReturnUserDTO;
   address?: ReturnAddressDTO;
   payment?: ReturnPaymentDTO;
@@ -21,6 +22,7 @@ export class ReturnOrderDTO {
     this.addressId = order.addressId;
     this.paymentId = order.paymentId;
     this.orderId = order.id;
+    this.amountProducts = order.amountProducts;
     this.user = order.user ? new ReturnUserDTO(order.user) : undefined;
     this.address = order.address
       ? new ReturnAddressDTO(order.address)
