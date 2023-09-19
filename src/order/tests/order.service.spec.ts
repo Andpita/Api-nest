@@ -177,4 +177,24 @@ describe('OrderService', () => {
     expect(spyPayment.mock.calls.length).toEqual(1);
     expect(spySaveOrder.mock.calls.length).toEqual(1);
   });
+
+  //Find all Orders for ADM
+  it('should return all orders for adm', async () => {
+    const spy = jest.spyOn(orderRepository, 'find');
+    const newOrder = await service.allOrders();
+
+    expect(newOrder).toEqual([orderMock]);
+    expect(spy.mock.calls[0][0]).toEqual({
+      relations: {
+        user: true,
+        address: true,
+      },
+    });
+  });
+
+  it('should return error in fild orders for adm', async () => {
+    jest.spyOn(orderRepository, 'find').mockResolvedValue([]);
+
+    expect(service.allOrders()).rejects.toThrowError();
+  });
 });

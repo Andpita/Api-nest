@@ -101,4 +101,19 @@ export class OrderService {
 
     return orders;
   }
+
+  async allOrders(): Promise<OrderEntity[]> {
+    const orders = await this.orderRepository.find({
+      relations: {
+        user: true,
+        address: true,
+      },
+    });
+
+    if (!orders || orders.length === 0) {
+      throw new NotFoundException(`Nenhuma ordem de compra encontrada`);
+    }
+
+    return orders;
+  }
 }
