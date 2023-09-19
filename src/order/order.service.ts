@@ -77,10 +77,14 @@ export class OrderService {
     return order;
   }
 
-  async findMyOrders(userId: number): Promise<OrderEntity[]> {
+  async findMyOrders(
+    userId?: number,
+    orderId?: number,
+  ): Promise<OrderEntity[]> {
     const orders = await this.orderRepository.find({
       where: {
         userId,
+        id: orderId,
       },
       relations: {
         address: true,
@@ -90,12 +94,13 @@ export class OrderService {
         payment: {
           status: true,
         },
+        user: !!orderId,
       },
     });
 
     if (!orders || orders.length === 0) {
       throw new NotFoundException(
-        `${userId} Nenhuma ordem de compra encontrada`,
+        `Nenhuma ordem (${orderId}) de compra encontrada e/ou usuário (${userId}) não encontrado`,
       );
     }
 

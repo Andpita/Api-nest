@@ -4,6 +4,7 @@ import { OrderService } from '../order.service';
 import { orderMock } from '../mocks/order.mock';
 import { createOrderMockPix } from '../mocks/createOrder.mock';
 import { userMock } from '../../user/mocks/user.mock';
+import { ReturnOrderDTO } from '../dtos/return-order.dto';
 
 describe('OrderController', () => {
   let controller: OrderController;
@@ -52,15 +53,13 @@ describe('OrderController', () => {
     const spy = jest.spyOn(orderService, 'allOrders');
     const allOrders = await controller.allOrdersAdm();
 
-    expect(allOrders).toEqual([
-      {
-        id: orderMock.id,
-        date: orderMock.date.toString(),
-        userId: orderMock.userId,
-        addressId: orderMock.addressId,
-        paymentId: orderMock.paymentId,
-      },
-    ]);
+    expect(allOrders).toEqual([new ReturnOrderDTO(orderMock)]);
     expect(spy.mock.calls.length).toEqual(1);
+  });
+
+  it('should return expecific order by ADM', async () => {
+    const orderId = await controller.orderIdAdm(orderMock.id);
+
+    expect(orderId).toEqual([new ReturnOrderDTO(orderMock)]);
   });
 });

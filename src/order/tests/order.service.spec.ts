@@ -121,6 +121,7 @@ describe('OrderService', () => {
     expect(newOrder).toEqual([orderMock]);
     expect(spy.mock.calls[0][0]).toEqual({
       where: {
+        id: undefined,
         userId: userMock.id,
       },
       relations: {
@@ -128,6 +129,7 @@ describe('OrderService', () => {
         orderProduct: {
           product: true,
         },
+        user: false,
         payment: {
           status: true,
         },
@@ -196,5 +198,28 @@ describe('OrderService', () => {
     jest.spyOn(orderRepository, 'find').mockResolvedValue([]);
 
     expect(service.allOrders()).rejects.toThrowError();
+  });
+
+  //Find Orders ADM
+  it('should return all orders to adm', async () => {
+    const spy = jest.spyOn(orderRepository, 'find');
+    const newOrder = await service.findMyOrders(undefined, orderMock.id);
+
+    expect(newOrder).toEqual([orderMock]);
+    expect(spy.mock.calls[0][0]).toEqual({
+      where: {
+        id: orderMock.id,
+      },
+      relations: {
+        address: true,
+        orderProduct: {
+          product: true,
+        },
+        user: true,
+        payment: {
+          status: true,
+        },
+      },
+    });
   });
 });
