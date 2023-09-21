@@ -10,7 +10,6 @@ import {
 import { CreateOrderDTO } from './dtos/create-order.dto';
 import { OrderService } from './order.service';
 import { UserId } from '../decorator/userId.decorator';
-import { OrderEntity } from './entities/order.entity';
 import { Roles } from '../decorator/roles.decorator';
 import { UserType } from '../user/enum/user-type.enum';
 import { ReturnOrderDTO } from './dtos/return-order.dto';
@@ -47,11 +46,11 @@ export class OrderController {
 
   @Roles(UserType.Admin)
   @Get('/:orderId')
-  async orderIdAdm(
-    @Param('orderId') orderId: number,
-  ): Promise<ReturnOrderDTO[]> {
-    return (await this.orderService.findMyOrders(undefined, orderId)).map(
-      (order) => new ReturnOrderDTO(order),
+  async orderIdAdm(@Param('orderId') orderId: number): Promise<ReturnOrderDTO> {
+    const order1 = new ReturnOrderDTO(
+      (await this.orderService.findMyOrders(undefined, orderId))[0],
     );
+
+    return order1;
   }
 }

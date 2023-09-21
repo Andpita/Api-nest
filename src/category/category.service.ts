@@ -42,7 +42,6 @@ export class CategoryService {
     const categories = await this.categoryRepository.find();
 
     const count = await this.productService.countProductByCategoryId();
-    console.log(count);
 
     if (!categories || categories.length === 0) {
       throw new NotFoundException(`Nenhuma categoria encontrada`);

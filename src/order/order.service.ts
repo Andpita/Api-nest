@@ -87,7 +87,11 @@ export class OrderService {
         id: orderId,
       },
       relations: {
-        address: true,
+        address: {
+          city: {
+            state: true,
+          },
+        },
         orderProduct: {
           product: true,
         },
@@ -136,7 +140,7 @@ export class OrderService {
         };
       }
 
-      return order;""
+      return order;
     });
   }
 }

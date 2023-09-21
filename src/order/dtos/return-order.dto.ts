@@ -16,13 +16,13 @@ export class ReturnOrderDTO {
   payment?: ReturnPaymentDTO;
   orderProduct?: ReturnOrderProductDTO[];
 
-  constructor(order: OrderEntity) {
-    this.date = order.date.toString();
-    this.userId = order.userId;
-    this.addressId = order.addressId;
-    this.paymentId = order.paymentId;
-    this.orderId = order.id;
-    this.amountProducts = order.amountProducts;
+  constructor(order?: OrderEntity) {
+    this.date = order?.date.toString();
+    this.userId = order?.userId;
+    this.addressId = order?.addressId;
+    this.paymentId = order?.paymentId;
+    this.orderId = order?.id;
+    this.amountProducts = order?.amountProducts;
     this.user = order.user ? new ReturnUserDTO(order.user) : undefined;
     this.address = order.address
       ? new ReturnAddressDTO(order.address)

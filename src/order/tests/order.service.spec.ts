@@ -52,6 +52,7 @@ describe('OrderService', () => {
           provide: OrderProductService,
           useValue: {
             createOrderProduct: jest.fn().mockResolvedValue(orderProductMock),
+            findAmountProductsByOrderId: jest.fn().mockResolvedValue([]),
           },
         },
         {
@@ -125,7 +126,11 @@ describe('OrderService', () => {
         userId: userMock.id,
       },
       relations: {
-        address: true,
+        address: {
+          city: {
+            state: true,
+          },
+        },
         orderProduct: {
           product: true,
         },
@@ -201,7 +206,7 @@ describe('OrderService', () => {
   });
 
   //Find Orders ADM
-  it('should return all orders to adm', async () => {
+  it('should return order by orderId to adm', async () => {
     const spy = jest.spyOn(orderRepository, 'find');
     const newOrder = await service.findMyOrders(undefined, orderMock.id);
 
@@ -211,7 +216,11 @@ describe('OrderService', () => {
         id: orderMock.id,
       },
       relations: {
-        address: true,
+        address: {
+          city: {
+            state: true,
+          },
+        },
         orderProduct: {
           product: true,
         },

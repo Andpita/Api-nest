@@ -46,7 +46,7 @@ describe('OrderController', () => {
   it('should return all order to user by userId', async () => {
     const allOrders = await controller.myOrders(userMock.id);
 
-    expect(allOrders).toEqual([orderMock]);
+    expect(allOrders).toEqual([new ReturnOrderDTO(orderMock)]);
   });
 
   it('should return all order for admin', async () => {
@@ -60,6 +60,6 @@ describe('OrderController', () => {
   it('should return expecific order by ADM', async () => {
     const orderId = await controller.orderIdAdm(orderMock.id);
 
-    expect(orderId).toEqual([new ReturnOrderDTO(orderMock)]);
+    expect(orderId).toEqual(new ReturnOrderDTO(orderMock));
   });
 });
