@@ -9,6 +9,7 @@ import {
   updatePasswordInvalidMock,
   updatePasswordMock,
 } from '../mocks/updatePassword.mock';
+import { UserType } from '../enum/user-type.enum';
 
 describe('UserService', () => {
   let service: UserService;
@@ -104,11 +105,23 @@ describe('UserService', () => {
   });
 
   it('should return new user if user not exist', async () => {
+    const spy = jest.spyOn(userRepository, 'save');
     jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
 
     const user = await service.createUser(createUserMock);
 
     expect(user).toEqual(userMock);
+    expect(spy.mock.calls[0][0].typeUser).toEqual(UserType.User);
+  });
+
+  it('should return new admin if user not exist', async () => {
+    const spy = jest.spyOn(userRepository, 'save');
+    jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
+
+    const user = await service.createUser(createUserMock, UserType.Admin);
+
+    expect(user).toEqual(userMock);
+    expect(spy.mock.calls[0][0].typeUser).toEqual(UserType.Admin);
   });
 
   //Update User

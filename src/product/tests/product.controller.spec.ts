@@ -5,6 +5,7 @@ import { productMock } from '../mocks/product.mock';
 import { productDeleteMock } from '../mocks/productDelete.mock';
 import { createProductMock } from '../mocks/createProduct.mock';
 import { updateProductMock } from '../mocks/updateProduct.mock';
+import { ReturnProductDTO } from '../dtos/returnProduct.dto';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -41,7 +42,7 @@ describe('ProductController', () => {
 
     expect(products).toEqual([
       {
-        ...productMock,
+        ...new ReturnProductDTO(productMock),
         createdAt: undefined,
         updatedAt: undefined,
         category: undefined,
@@ -53,7 +54,7 @@ describe('ProductController', () => {
     const products = await controller.findProductById(productMock.id);
 
     expect(products).toEqual({
-      ...productMock,
+      ...new ReturnProductDTO(productMock),
       createdAt: undefined,
       updatedAt: undefined,
       category: undefined,

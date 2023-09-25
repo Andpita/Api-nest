@@ -38,7 +38,14 @@ export class ProductService {
       throw new BadRequestException(`Produto ${product.name} já cadastrado`);
     }
 
-    return await this.productRepository.save(product);
+    return await this.productRepository.save({
+      ...product,
+      weight: product.weight || 0,
+      height: product.height || 0,
+      diameter: product.diameter || 0,
+      width: product.width || 0,
+      length: product.length || 0,
+    });
   }
 
   //find
@@ -142,7 +149,7 @@ export class ProductService {
 
   async frete(productId: number, cep: string): Promise<any> {
     const product = new ReturnProductDTO(await this.findProductById(productId));
-    const delivery = await this.correiosService.calcFrete(cep);
+    const delivery = await this.correiosService.calcFrete(cep, product.weight);
 
     return { ...product, ...delivery };
   }

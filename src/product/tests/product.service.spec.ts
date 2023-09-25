@@ -5,16 +5,17 @@ import { ProductEntity } from '../entities/product.entity';
 import { productMock } from '../mocks/product.mock';
 import { In, Repository } from 'typeorm';
 import { CategoryService } from '../../category/category.service';
-import { CategoryEntity } from '../../category/entities/category.entity';
 import { categoryMock } from '../../category/mocks/category.mock';
 import { productDeleteMock } from '../mocks/productDelete.mock';
 import { updateProductMock } from '../mocks/updateProduct.mock';
 import { BadRequestException } from '@nestjs/common';
+import { CorreiosService } from '../../correios/correios.service';
 
 describe('ProductService', () => {
   let service: ProductService;
   let productRepository: Repository<ProductEntity>;
-  let categoryRepository: Repository<CategoryEntity>;
+  let categoryService: CategoryService;
+  let correiosService: CorreiosService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -32,9 +33,16 @@ describe('ProductService', () => {
         },
         CategoryService,
         {
-          provide: getRepositoryToken(CategoryEntity),
+          provide: CategoryService,
           useValue: {
-            findOne: jest.fn().mockResolvedValue(categoryMock),
+            findOneCategoryById: jest.fn().mockResolvedValue(categoryMock.id),
+          },
+        },
+        CorreiosService,
+        {
+          provide: CorreiosService,
+          useValue: {
+            calcFrete: jest.fn().mockResolvedValue({}),
           },
         },
       ],
@@ -42,19 +50,23 @@ describe('ProductService', () => {
 
     service = module.get<ProductService>(ProductService);
     productRepository = module.get(getRepositoryToken(ProductEntity));
-    categoryRepository = module.get(getRepositoryToken(CategoryEntity));
+    categoryService = module.get<CategoryService>(CategoryService);
+    correiosService = module.get<CorreiosService>(CorreiosService);
   });
 
   it('should be defined', () => {
     expect(service).toBeDefined();
     expect(productRepository).toBeDefined();
-    expect(categoryRepository).toBeDefined();
+    expect(categoryService).toBeDefined();
+    expect(correiosService).toBeDefined();
   });
 
   //Create New Product
   it('should return product after save', async () => {
     jest.spyOn(productRepository, 'findOne').mockResolvedValue(undefined);
-    jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(categoryMock);
+    jest
+      .spyOn(categoryService, 'findOneCategoryById')
+      .mockResolvedValue(categoryMock);
 
     const product = await service.createProduct(productMock);
 
@@ -63,7 +75,9 @@ describe('ProductService', () => {
 
   it('should return error if categoty not exist', async () => {
     jest.spyOn(productRepository, 'findOne').mockResolvedValue(productMock);
-    jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(undefined);
+    jest
+      .spyOn(categoryService, 'findOneCategoryById')
+      .mockResolvedValue(undefined);
 
     expect(service.createProduct(productMock)).rejects.toThrowError();
   });

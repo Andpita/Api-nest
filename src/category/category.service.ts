@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CategoryEntity } from './entities/category.entity';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateCategoryDTO } from './dtos/createCategory.dto';
 import { ProductService } from '../product/product.service';
 import { ReturnCategoryDTO } from './dtos/returnCategory.dto';
@@ -94,5 +94,29 @@ export class CategoryService {
     }
 
     return await this.categoryRepository.save(category);
+  }
+
+  async deleteCategory(id: number): Promise<DeleteResult> {
+    const category = await this.findOneCategoryById(id);
+
+    return this.categoryRepository.delete(category.id);
+  }
+
+  async updateCategory(
+    idCategory: number,
+    updateCategory: CategoryEntity,
+  ): Promise<CategoryEntity> {
+    const category = await this.findOneCategoryById(idCategory).catch(
+      () => undefined,
+    );
+
+    if (!category) {
+      throw new BadRequestException(`Produto ${idCategory} não encontrado`);
+    }
+
+    return await this.categoryRepository.save({
+      ...category,
+      ...updateCategory,
+    });
   }
 }

@@ -16,16 +16,12 @@ import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/createProduct.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
-import { CorreiosService } from '../correios/correios.service';
 
 @Controller('product')
 export class ProductController {
-  constructor(
-    private readonly productService: ProductService,
-    private readonly correiosService: CorreiosService,
-  ) {}
+  constructor(private readonly productService: ProductService) {}
 
-  @Roles(UserType.User, UserType.Admin)
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
   @Get()
   @UsePipes(ValidationPipe)
   async findAllProducts(): Promise<ReturnProductDTO[]> {
@@ -34,14 +30,14 @@ export class ProductController {
     );
   }
 
-  @Roles(UserType.User, UserType.Admin)
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Get('/:id')
   async findProductById(@Param('id') id: number): Promise<ReturnProductDTO> {
     return new ReturnProductDTO(await this.productService.findProductById(id));
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Post()
   async createProduct(
@@ -50,7 +46,7 @@ export class ProductController {
     return await this.productService.createProduct(product);
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @Delete('/:productId')
   async deleteProduct(
     @Param('productId') productId: number,
@@ -58,7 +54,7 @@ export class ProductController {
     return await this.productService.deleteProductById(productId);
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @UsePipes(ValidationPipe)
   @Put('/:id')
   async updateProduct(
@@ -74,7 +70,6 @@ export class ProductController {
     @Param('productId') productId: number,
     @Param('cep') cep: string,
   ) {
-    //return this.correiosService.calcFrete(cep);
     return this.productService.frete(productId, cep);
   }
 }

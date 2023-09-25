@@ -28,7 +28,7 @@ export class AddressController {
     return this.addressService.createAddress(address, userId);
   }
 
-  @Roles(UserType.User, UserType.Admin)
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
   @Get()
   @UsePipes(ValidationPipe)
   async findAllAddresses(

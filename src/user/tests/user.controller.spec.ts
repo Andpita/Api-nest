@@ -5,6 +5,7 @@ import { userMock } from '../mocks/user.mock';
 import { createUserMock } from '../mocks/createUser.mock';
 import { updatePasswordMock } from '../mocks/updatePassword.mock';
 import { ReturnUserDTO } from '../dtos/returnUser.dto';
+import { UserType } from '../enum/user-type.enum';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -54,6 +55,14 @@ describe('UserController', () => {
     const user = await controller.createUser(createUserMock);
 
     expect(user).toEqual(userMock);
+  });
+
+  it('should return new admin (post)', async () => {
+    const spy = jest.spyOn(userService, 'createUser');
+    const user = await controller.createAdmin(createUserMock);
+
+    expect(user).toEqual(userMock);
+    expect(spy.mock.calls[0][1]).toEqual(UserType.Admin);
   });
 
   it('should return update user password (patch)', async () => {

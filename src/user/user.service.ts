@@ -18,7 +18,10 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
-  async createUser(createUser: CreateUserDTO): Promise<UserEntity> {
+  async createUser(
+    createUser: CreateUserDTO,
+    typeUser?: number,
+  ): Promise<UserEntity> {
     const userCheck = await this.findUserByEmail(createUser.email).catch(
       () => undefined,
     );
@@ -32,7 +35,7 @@ export class UserService {
     return this.userRepository.save({
       ...createUser,
       password: _password,
-      typeUser: UserType.User,
+      typeUser: typeUser ? typeUser : UserType.User,
     });
   }
 

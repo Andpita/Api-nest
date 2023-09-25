@@ -12,4 +12,19 @@ export class UpdateProductDTO {
 
   @IsInt()
   categoryId: number;
+
+  @IsNumber()
+  weight?: number;
+
+  @IsNumber()
+  length?: number;
+
+  @IsNumber()
+  height?: number;
+
+  @IsNumber()
+  width?: number;
+
+  @IsNumber()
+  diameter?: number;
 }

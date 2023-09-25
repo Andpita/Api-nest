@@ -18,7 +18,7 @@ import { ReturnOrderDTO } from './dtos/return-order.dto';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Roles(UserType.Admin, UserType.User)
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Post()
   @UsePipes(ValidationPipe)
   async createOrder(
@@ -28,7 +28,7 @@ export class OrderController {
     return this.orderService.createOrder(newOrder, userId);
   }
 
-  @Roles(UserType.Admin, UserType.User)
+  @Roles(UserType.Admin, UserType.Root, UserType.User)
   @Get()
   async myOrders(@UserId() userId: number): Promise<ReturnOrderDTO[]> {
     return (await this.orderService.findMyOrders(userId)).map(
@@ -36,7 +36,7 @@ export class OrderController {
     );
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/all')
   async allOrdersAdm(): Promise<ReturnOrderDTO[]> {
     return (await this.orderService.allOrders()).map(
@@ -44,7 +44,7 @@ export class OrderController {
     );
   }
 
-  @Roles(UserType.Admin)
+  @Roles(UserType.Admin, UserType.Root)
   @Get('/:orderId')
   async orderIdAdm(@Param('orderId') orderId: number): Promise<ReturnOrderDTO> {
     const order1 = new ReturnOrderDTO(
