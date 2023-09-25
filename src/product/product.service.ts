@@ -12,6 +12,8 @@ import { CreateProductDTO } from './dtos/createProduct.dto';
 import { CategoryService } from './../category/category.service';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
 import { CountProductDTO } from './dtos/countProduct.dto';
+import { CorreiosService } from '../correios/correios.service';
+import { ReturnProductDTO } from './dtos/returnProduct.dto';
 
 @Injectable()
 export class ProductService {
@@ -21,6 +23,7 @@ export class ProductService {
 
     @Inject(forwardRef(() => CategoryService))
     private readonly categoryService: CategoryService,
+    private readonly correiosService: CorreiosService,
   ) {}
 
   //create
@@ -135,5 +138,12 @@ export class ProductService {
       .select('product.category_id, COUNT(*) as total')
       .groupBy('product.category_id')
       .getRawMany();
+  }
+
+  async frete(productId: number, cep: string): Promise<any> {
+    const product = new ReturnProductDTO(await this.findProductById(productId));
+    const delivery = await this.correiosService.calcFrete(cep);
+
+    return { ...product, ...delivery };
   }
 }

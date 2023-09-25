@@ -6,6 +6,11 @@ import { ReturnCEPDTO } from './dtos/returnCEP.dto';
 export class CorreiosController {
   constructor(private readonly correiosService: CorreiosService) {}
 
+  @Get('/frete/:cep')
+  async getFrete(@Param('cep') cep: string) {
+    return this.correiosService.calcFrete(cep);
+  }
+
   @Get('/:cep')
   async findCep(@Param('cep') cep: string): Promise<ReturnCEPDTO> {
     return await this.correiosService.findAddressByCEP(cep);

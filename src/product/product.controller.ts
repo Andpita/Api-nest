@@ -16,10 +16,14 @@ import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/createProduct.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
+import { CorreiosService } from '../correios/correios.service';
 
 @Controller('product')
 export class ProductController {
-  constructor(private readonly productService: ProductService) {}
+  constructor(
+    private readonly productService: ProductService,
+    private readonly correiosService: CorreiosService,
+  ) {}
 
   @Roles(UserType.User, UserType.Admin)
   @Get()
@@ -63,5 +67,14 @@ export class ProductController {
     product: UpdateProductDTO,
   ): Promise<ReturnProductDTO> {
     return await this.productService.updateProduct(id, product);
+  }
+
+  @Get('/:productId/delivery/:cep')
+  async getFrete(
+    @Param('productId') productId: number,
+    @Param('cep') cep: string,
+  ) {
+    //return this.correiosService.calcFrete(cep);
+    return this.productService.frete(productId, cep);
   }
 }
