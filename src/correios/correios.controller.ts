@@ -8,7 +8,7 @@ export class CorreiosController {
 
   @Get('/frete/:cep')
   async getFrete(@Param('cep') cep: string) {
-    return this.correiosService.calcFrete(cep);
+    return this.correiosService.calcFrete(cep, 1000);
   }
 
   @Get('/:cep')

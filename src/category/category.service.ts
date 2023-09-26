@@ -70,11 +70,17 @@ export class CategoryService {
     return category;
   }
 
-  async findOneCategoryById(id: number): Promise<CategoryEntity> {
+  async findOneCategoryById(
+    id: number,
+    isRelations?: boolean,
+  ): Promise<CategoryEntity> {
+    const relations = isRelations ? { product: true } : undefined;
+
     const category = await this.categoryRepository.findOne({
       where: {
         id,
       },
+      relations,
     });
 
     if (!category) {
@@ -97,26 +103,24 @@ export class CategoryService {
   }
 
   async deleteCategory(id: number): Promise<DeleteResult> {
-    const category = await this.findOneCategoryById(id);
+    const category = await this.findOneCategoryById(id, true);
 
-    return this.categoryRepository.delete(category.id);
+    if (category.product?.length > 0) {
+      throw new BadRequestException('A categoria possui produtos cadastrados.');
+    }
+
+    return await this.categoryRepository.delete(category.id);
   }
 
   async updateCategory(
     idCategory: number,
-    updateCategory: CategoryEntity,
+    update: CreateCategoryDTO,
   ): Promise<CategoryEntity> {
-    const category = await this.findOneCategoryById(idCategory).catch(
-      () => undefined,
-    );
-
-    if (!category) {
-      throw new BadRequestException(`Produto ${idCategory} não encontrado`);
-    }
+    const category = await this.findOneCategoryById(idCategory);
 
     return await this.categoryRepository.save({
       ...category,
-      ...updateCategory,
+      name: update.name,
     });
   }
 }

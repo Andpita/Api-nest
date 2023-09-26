@@ -5,6 +5,8 @@ import { CityService } from '../city.service';
 import { CityEntity } from '../entities/city.entity';
 import { CacheService } from '../../cache/cache.service';
 import { cityMock } from '../mocks/city.mock';
+import { stateMock } from '../../state/mocks/state.mock';
+import { cityAndRelationsMock } from '../mocks/cityAndRelations.mock';
 
 describe('CityService', () => {
   let service: CityService;
@@ -41,18 +43,20 @@ describe('CityService', () => {
     expect(cityRepository).toBeDefined();
   });
 
+  //findOne
   it('should return city by id', async () => {
     const city = await service.findCityById(cityMock.id);
 
     expect(city).toEqual(cityMock);
   });
 
-  it('should return city by id', async () => {
+  it('should return error in city by id undefined', async () => {
     jest.spyOn(cityRepository, 'findOne').mockResolvedValue(undefined);
 
     expect(service.findCityById(cityMock.id)).rejects.toThrowError();
   });
 
+  //FindAll
   it('should return cities in getAllCitiesByStateId', async () => {
     const cities = await service.getAllCitiesByStateId(cityMock.id);
 
@@ -63,5 +67,16 @@ describe('CityService', () => {
     const cities = await service.getAllCitiesByStateId(cityMock.id);
 
     expect(cities).toEqual([cityMock]);
+  });
+
+  //FindRelations
+  it('should return city by name and relations', async () => {
+    const city = await service.findCityByName(cityMock.name, stateMock.uf);
+
+    expect(city).toEqual({
+      ...cityAndRelationsMock,
+      updatedAt: cityMock.updatedAt,
+      createdAt: cityMock.updatedAt,
+    });
   });
 });

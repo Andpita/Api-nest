@@ -3,6 +3,8 @@ import { CategoryController } from '../category.controller';
 import { CategoryService } from '../category.service';
 import { categoryMock } from '../mocks/category.mock';
 import { createCategoryMock } from '../mocks/createCategory.mock';
+import { deleteCategory } from '../mocks/deleteCategory.mock';
+import { updateCategoryMock } from '../mocks/updateCategory.mock';
 
 describe('CategoryController', () => {
   let controller: CategoryController;
@@ -16,6 +18,11 @@ describe('CategoryController', () => {
           useValue: {
             findAllCategories: jest.fn().mockResolvedValue([categoryMock]),
             createCategory: jest.fn().mockResolvedValue(categoryMock),
+            deleteCategory: jest.fn().mockResolvedValue(deleteCategory),
+            updateCategory: jest.fn().mockResolvedValue({
+              ...categoryMock,
+              ...updateCategoryMock,
+            }),
           },
         },
       ],
@@ -45,5 +52,20 @@ describe('CategoryController', () => {
       createdAt: undefined,
       updatedAt: undefined,
     });
+  });
+
+  it('should return delete result after delete category (delete)', async () => {
+    const categories = await controller.deleteCategory(categoryMock.id);
+
+    expect(categories).toEqual(deleteCategory);
+  });
+
+  it('should return update category (put)', async () => {
+    const categories = await controller.updateCategory(
+      categoryMock.id,
+      updateCategoryMock,
+    );
+
+    expect(categories).toEqual({ ...categoryMock, ...updateCategoryMock });
   });
 });

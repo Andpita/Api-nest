@@ -8,6 +8,8 @@ import { createCategoryMock } from '../mocks/createCategory.mock';
 import { ProductService } from '../../product/product.service';
 import { countMock } from '../../product/mocks/counterProduct.mock';
 import { ReturnCategoryDTO } from '../dtos/returnCategory.dto';
+import { updateCategoryMock } from '../mocks/updateCategory.mock';
+import { deleteCategory } from '../mocks/deleteCategory.mock';
 
 describe('CategoryService', () => {
   let service: CategoryService;
@@ -24,6 +26,7 @@ describe('CategoryService', () => {
             save: jest.fn().mockResolvedValue(categoryMock),
             find: jest.fn().mockResolvedValue([categoryMock]),
             findOne: jest.fn().mockResolvedValue(categoryMock),
+            delete: jest.fn().mockResolvedValue(deleteCategory),
           },
         },
         {
@@ -105,7 +108,7 @@ describe('CategoryService', () => {
     expect(service.findOneCategory(categoryMock.name)).rejects.toThrowError();
   });
 
-  it('should return error category by name not exist', async () => {
+  it('should return error category by id not exist', async () => {
     jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(undefined);
 
     expect(service.findOneCategoryById(categoryMock.id)).rejects.toThrowError();
@@ -115,5 +118,38 @@ describe('CategoryService', () => {
     jest.spyOn(categoryRepository, 'findOne').mockRejectedValue(new Error());
 
     expect(service.findOneCategory(categoryMock.name)).rejects.toThrowError();
+  });
+
+  it('should return error exception category findOne', async () => {
+    jest.spyOn(categoryRepository, 'findOne').mockRejectedValue(new Error());
+
+    expect(service.findOneCategory(categoryMock.name)).rejects.toThrowError();
+  });
+
+  //Delete
+  it('should return delete category', async () => {
+    const deleteC = await service.deleteCategory(categoryMock.id);
+
+    expect(deleteC).toEqual(deleteCategory);
+  });
+
+  it('should return error in delete category if createCategory', async () => {
+    jest.spyOn(categoryRepository, 'findOne').mockResolvedValue(undefined);
+
+    expect(service.deleteCategory(categoryMock.id)).rejects.toThrowError();
+  });
+
+  //update
+  it('should return update category name', async () => {
+    const find = jest.spyOn(categoryRepository, 'findOne');
+    const save = jest.spyOn(categoryRepository, 'save');
+    const category = await service.updateCategory(
+      categoryMock.id,
+      updateCategoryMock,
+    );
+
+    expect(category).toEqual(categoryMock);
+    expect(find.mock.calls.length).toEqual(1);
+    expect(save.mock.calls.length).toEqual(1);
   });
 });

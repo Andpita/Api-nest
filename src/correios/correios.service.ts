@@ -72,14 +72,14 @@ export class CorreiosService {
     });
   }
 
-  async calcFrete(cep: string, weight?: number): Promise<any> {
-    const infoPrice = await this.httpService.axiosRef.get(
-      `https://www.cepcerto.com/ws/json-frete/88021062/${cep}/500`,
-    );
-
+  async calcFrete(cep: string, weight: number): Promise<any> {
     if (weight === 0) {
-      weight = 1;
+      weight = 1000;
     }
+
+    const infoPrice = await this.httpService.axiosRef.get(
+      `https://www.cepcerto.com/ws/json-frete/88021062/${cep}/${weight}`,
+    );
 
     const originalData = { ...infoPrice.data };
     const originalPac = +Number(
@@ -88,8 +88,6 @@ export class CorreiosService {
     const originalSedex = +Number(
       originalData.valorsedex.replace(',', '.'),
     ).toFixed(2);
-
-    console.log(originalPac, originalSedex);
 
     const newData: ReturnFreteDTO = {
       ...originalData,

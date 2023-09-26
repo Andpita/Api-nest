@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CorreiosController } from '../correios.controller';
 import { CorreiosService } from '../correios.service';
+import { returnCorreiosMock } from '../mocks/returnInfoCorreios.mock';
 
 describe('CorreiosController', () => {
   let controller: CorreiosController;
@@ -13,7 +14,7 @@ describe('CorreiosController', () => {
           provide: CorreiosService,
           useValue: {
             getFrete: jest.fn().mockResolvedValue(0),
-            findCep: jest.fn().mockResolvedValue(0),
+            findAddressByCEP: jest.fn().mockResolvedValue(returnCorreiosMock),
           },
         },
       ],
@@ -27,5 +28,11 @@ describe('CorreiosController', () => {
   it('should be defined', () => {
     expect(controller).toBeDefined();
     expect(correiosService).toBeDefined();
+  });
+
+  it('should return correios local', async () => {
+    const local = await controller.findCep(returnCorreiosMock.cep);
+
+    expect(local).toEqual(returnCorreiosMock);
   });
 });
