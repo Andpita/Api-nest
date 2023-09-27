@@ -7,13 +7,17 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from './entities/product.entity';
-import { DeleteResult, In, Repository } from 'typeorm';
+import { DeleteResult, ILike, In, Repository } from 'typeorm';
 import { CreateProductDTO } from './dtos/createProduct.dto';
 import { CategoryService } from './../category/category.service';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
 import { CountProductDTO } from './dtos/countProduct.dto';
 import { CorreiosService } from '../correios/correios.service';
 import { ReturnProductDTO } from './dtos/returnProduct.dto';
+import { Pagination, PaginationMeta } from 'src/page/dtos/pagination.dto';
+
+const DEFAULT_SIZE_PAGE = 10;
+const DEFAULT_PAGE = 1;
 
 @Injectable()
 export class ProductService {
@@ -106,6 +110,46 @@ export class ProductService {
     return products;
   }
 
+  async findAllPage(
+    search?: string,
+    size: number = DEFAULT_SIZE_PAGE,
+    page: number = DEFAULT_PAGE,
+  ): Promise<Pagination<ProductEntity[]>> {
+    let findOptions = {};
+
+    if (!page || page < 0) {
+      page = 1;
+    }
+
+    if (search) {
+      findOptions = {
+        where: {
+          name: ILike(`%${search}%`),
+        },
+      };
+    }
+
+    const [products, total] = await this.productRepository.findAndCount({
+      ...findOptions,
+      take: size,
+      skip: (page - 1) * size,
+    });
+
+    if (!products || products.length === 0) {
+      throw new NotFoundException(`Nenhum produto encontrado`);
+    }
+
+    return new Pagination(
+      new PaginationMeta(
+        Number(size),
+        total,
+        Number(page),
+        Math.ceil(total / size),
+      ),
+      products,
+    );
+  }
+
   //delete
   async deleteProductById(id: number): Promise<DeleteResult> {
     const productDelete = await this.findProductById(id);
@@ -138,7 +182,7 @@ export class ProductService {
     });
   }
 
-  //
+  //Count Products (GET)
   async countProductByCategoryId(): Promise<CountProductDTO[]> {
     return this.productRepository
       .createQueryBuilder('product')
@@ -147,6 +191,7 @@ export class ProductService {
       .getRawMany();
   }
 
+  //GET Delivery (GET)
   async frete(productId: number, cep: string): Promise<any> {
     const product = new ReturnProductDTO(await this.findProductById(productId));
     const delivery = await this.correiosService.calcFrete(cep, product.weight);

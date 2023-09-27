@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -16,10 +17,21 @@ import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/createProduct.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
+import { Pagination } from 'src/page/dtos/pagination.dto';
 
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
+
+  @Roles(UserType.User, UserType.Admin, UserType.Root)
+  @Get('/page')
+  async findAllPages(
+    @Query('search') search?: string,
+    @Query('size') size?: number,
+    @Query('page') page?: number,
+  ): Promise<Pagination<ReturnProductDTO[]>> {
+    return this.productService.findAllPage(search, size, page);
+  }
 
   @Roles(UserType.User, UserType.Admin, UserType.Root)
   @Get()
