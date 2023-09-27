@@ -6,6 +6,7 @@ import { productDeleteMock } from '../mocks/productDelete.mock';
 import { createProductMock } from '../mocks/createProduct.mock';
 import { updateProductMock } from '../mocks/updateProduct.mock';
 import { ReturnProductDTO } from '../dtos/returnProduct.dto';
+import { paginationMock } from '../../page/mocks/pagination.mock';
 
 describe('ProductController', () => {
   let controller: ProductController;
@@ -22,6 +23,7 @@ describe('ProductController', () => {
             createProduct: jest.fn().mockResolvedValue(productMock),
             deleteProductById: jest.fn().mockResolvedValue(productDeleteMock),
             updateProduct: jest.fn().mockResolvedValue(updateProductMock),
+            findAllPage: jest.fn().mockResolvedValue(paginationMock),
           },
         },
       ],
@@ -85,5 +87,24 @@ describe('ProductController', () => {
       updatedAt: undefined,
       category: undefined,
     });
+  });
+
+  it('should return pagination informations', async () => {
+    const pagination = await controller.findAllPages();
+
+    expect(pagination).toEqual(paginationMock);
+  });
+
+  it('should return pagination informations (search, size, page)', async () => {
+    const searchMock = 'test';
+    const size = 5;
+    const page = 1;
+
+    const spy = jest.spyOn(productService, 'findAllPage');
+    await controller.findAllPages(searchMock, size, page);
+
+    expect(spy.mock.calls[0][0]).toEqual(searchMock);
+    expect(spy.mock.calls[0][1]).toEqual(size);
+    expect(spy.mock.calls[0][2]).toEqual(page);
   });
 });

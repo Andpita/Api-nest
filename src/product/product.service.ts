@@ -14,7 +14,7 @@ import { UpdateProductDTO } from './dtos/updateProduct.dto';
 import { CountProductDTO } from './dtos/countProduct.dto';
 import { CorreiosService } from '../correios/correios.service';
 import { ReturnProductDTO } from './dtos/returnProduct.dto';
-import { Pagination, PaginationMeta } from 'src/page/dtos/pagination.dto';
+import { Pagination, PaginationMeta } from '..//page/dtos/pagination.dto';
 
 const DEFAULT_SIZE_PAGE = 10;
 const DEFAULT_PAGE = 1;
@@ -134,10 +134,6 @@ export class ProductService {
       take: size,
       skip: (page - 1) * size,
     });
-
-    if (!products || products.length === 0) {
-      throw new NotFoundException(`Nenhum produto encontrado`);
-    }
 
     return new Pagination(
       new PaginationMeta(

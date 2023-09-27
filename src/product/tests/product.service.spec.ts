@@ -3,7 +3,7 @@ import { ProductService } from '../product.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ProductEntity } from '../entities/product.entity';
 import { productMock } from '../mocks/product.mock';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { CategoryService } from '../../category/category.service';
 import { categoryMock } from '../../category/mocks/category.mock';
 import { productDeleteMock } from '../mocks/productDelete.mock';
@@ -26,6 +26,7 @@ describe('ProductService', () => {
           useValue: {
             save: jest.fn().mockResolvedValue(productMock),
             find: jest.fn().mockResolvedValue([productMock]),
+            findAndCount: jest.fn().mockResolvedValue([[productMock], 1]),
             findOne: jest.fn().mockResolvedValue(productMock),
             delete: jest.fn().mockResolvedValue(productDeleteMock),
             put: jest.fn().mockResolvedValue(productMock),
@@ -214,5 +215,46 @@ describe('ProductService', () => {
     expect(
       service.updateProduct(productMock.id, updateProductMock),
     ).rejects.toThrowError();
+  });
+
+  it('should return product pagination', async () => {
+    const result = await service.findAllPage();
+
+    expect(result.data).toEqual([productMock]);
+    expect(result.meta).toEqual({
+      currentPage: 1,
+      itemsPerPage: 10,
+      totalItems: 1,
+      totalPages: 1,
+    });
+  });
+
+  it('should return product pagination send size and page', async () => {
+    const size = 123;
+    const page = 321;
+    const result = await service.findAllPage(undefined, size, page);
+
+    expect(result.data).toEqual([productMock]);
+    expect(result.meta).toEqual({
+      currentPage: page,
+      itemsPerPage: size,
+      totalItems: 1,
+      totalPages: 1,
+    });
+  });
+
+  it('should return product pagination send size and page', async () => {
+    const search = 'searchTest';
+    const spy = jest.spyOn(productRepository, 'findAndCount');
+    await service.findAllPage(search);
+
+    expect(spy.mock.calls[0][0].where).toEqual({ name: ILike(`%${search}%`) });
+  });
+
+  it('should return delivery values', async () => {
+    const spy = jest.spyOn(correiosService, 'calcFrete');
+    await service.frete(productMock.id, '00000-000');
+
+    expect(spy.mock.calls.length).toEqual(1);
   });
 });

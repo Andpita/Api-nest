@@ -17,7 +17,7 @@ import { ProductService } from './product.service';
 import { CreateProductDTO } from './dtos/createProduct.dto';
 import { DeleteResult } from 'typeorm';
 import { UpdateProductDTO } from './dtos/updateProduct.dto';
-import { Pagination } from 'src/page/dtos/pagination.dto';
+import { Pagination } from '../page/dtos/pagination.dto';
 
 @Controller('product')
 export class ProductController {
